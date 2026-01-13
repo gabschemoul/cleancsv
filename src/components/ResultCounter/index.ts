@@ -1,0 +1,1 @@
+export { ResultCounter } from './ResultCounter'
