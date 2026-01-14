@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ResultCounterProps {
@@ -14,31 +14,49 @@ export function ResultCounter({
   variant = 'success',
   className,
 }: ResultCounterProps) {
-  const [displayCount, setDisplayCount] = useState(0)
+  const [displayCount, setDisplayCount] = useState(count)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
+    // Clear any existing timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+
+    // For zero, show immediately - no animation needed
     if (count === 0) {
+      // eslint-disable-next-line -- Intentional: reset counter immediately when count is cleared
       setDisplayCount(0)
       return
     }
 
+    // Animate from 0 to count
     const duration = 400 // ms
     const steps = 20
     const increment = count / steps
     const stepDuration = duration / steps
 
     let current = 0
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       current += increment
       if (current >= count) {
         setDisplayCount(count)
-        clearInterval(timer)
+        if (timerRef.current) {
+          clearInterval(timerRef.current)
+          timerRef.current = null
+        }
       } else {
         setDisplayCount(Math.floor(current))
       }
     }, stepDuration)
 
-    return () => clearInterval(timer)
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
   }, [count])
 
   return (

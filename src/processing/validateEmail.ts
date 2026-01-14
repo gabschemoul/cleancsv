@@ -8,7 +8,7 @@ export interface EmailValidationResult {
   invalidReasons: Map<number, string>
 }
 
-// Basic email validation (RFC 5322 simplified)
+// Email validation (RFC 5322 simplified but stricter)
 function isValidEmail(email: string): { valid: boolean; reason?: string } {
   if (!email || email.trim() === '') {
     return { valid: false, reason: 'Empty email' }
@@ -16,12 +16,18 @@ function isValidEmail(email: string): { valid: boolean; reason?: string } {
 
   const trimmed = email.trim().toLowerCase()
 
-  // Check for @ symbol
-  if (!trimmed.includes('@')) {
+  // Check for multiple @ symbols
+  const atCount = (trimmed.match(/@/g) || []).length
+  if (atCount === 0) {
     return { valid: false, reason: 'Missing @' }
   }
+  if (atCount > 1) {
+    return { valid: false, reason: 'Multiple @ symbols' }
+  }
 
-  const [local, domain] = trimmed.split('@')
+  const atIndex = trimmed.indexOf('@')
+  const local = trimmed.slice(0, atIndex)
+  const domain = trimmed.slice(atIndex + 1)
 
   // Check local part
   if (!local || local.length === 0) {
@@ -32,14 +38,36 @@ function isValidEmail(email: string): { valid: boolean; reason?: string } {
     return { valid: false, reason: 'Local part too long' }
   }
 
+  // Check for invalid local part patterns
+  if (local.startsWith('.') || local.endsWith('.')) {
+    return { valid: false, reason: 'Local part cannot start or end with dot' }
+  }
+
+  if (local.includes('..')) {
+    return { valid: false, reason: 'Consecutive dots in local part' }
+  }
+
   // Check domain
   if (!domain || domain.length === 0) {
     return { valid: false, reason: 'Missing domain' }
   }
 
+  if (domain.length > 253) {
+    return { valid: false, reason: 'Domain too long' }
+  }
+
   // Check for TLD
   if (!domain.includes('.')) {
     return { valid: false, reason: 'Missing TLD' }
+  }
+
+  // Check for invalid domain patterns
+  if (domain.startsWith('.') || domain.endsWith('.')) {
+    return { valid: false, reason: 'Domain cannot start or end with dot' }
+  }
+
+  if (domain.includes('..')) {
+    return { valid: false, reason: 'Consecutive dots in domain' }
   }
 
   const parts = domain.split('.')
@@ -49,10 +77,20 @@ function isValidEmail(email: string): { valid: boolean; reason?: string } {
     return { valid: false, reason: 'Invalid TLD' }
   }
 
-  // Basic regex for additional validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(trimmed)) {
-    return { valid: false, reason: 'Invalid format' }
+  // Check each domain part is valid
+  for (const part of parts) {
+    if (part.length === 0 || part.length > 63) {
+      return { valid: false, reason: 'Invalid domain label length' }
+    }
+    if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/i.test(part)) {
+      return { valid: false, reason: 'Invalid domain format' }
+    }
+  }
+
+  // Final regex check for allowed characters in local part
+  const localPartRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/i
+  if (!localPartRegex.test(local)) {
+    return { valid: false, reason: 'Invalid characters in local part' }
   }
 
   return { valid: true }

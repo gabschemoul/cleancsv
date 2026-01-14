@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback, memo, useRef } from 'react'
 import {
   Copy,
   Type,
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useCsvContext } from '@/context/CsvContext'
+import { useCsvContext } from '@/hooks/useCsvContext'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { deduplicate } from '@/processing/deduplicate'
@@ -24,16 +24,19 @@ import {
 } from '@/processing/formatText'
 import { removeInvalidEmails, validateEmails } from '@/processing/validateEmail'
 
-export function ToolBar() {
+export const ToolBar = memo(function ToolBar() {
   const { data, columns, isLoaded, updateData, setHighlightedCells } = useCsvContext()
   const [selectedColumn, setSelectedColumn] = useState<string>('')
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [focusedIndex, setFocusedIndex] = useState(-1)
+  const menuRef = useRef<HTMLDivElement>(null)
 
-  if (!isLoaded) {
-    return null
-  }
+  const closeDropdown = useCallback(() => {
+    setOpenDropdown(null)
+    setFocusedIndex(-1)
+  }, [])
 
-  const handleDeduplicate = () => {
+  const handleDeduplicate = useCallback(() => {
     if (!selectedColumn) {
       toast.error('Select a column', {
         description: 'Choose which column to check for duplicates.',
@@ -54,9 +57,9 @@ export function ToolBar() {
       })
     }
     setOpenDropdown(null)
-  }
+  }, [data, selectedColumn, updateData])
 
-  const handleFormat = (
+  const handleFormat = useCallback((
     formatFn: (rows: typeof data, columns: string[]) => ReturnType<typeof toLowerCase>
   ) => {
     if (!selectedColumn) {
@@ -79,9 +82,9 @@ export function ToolBar() {
       })
     }
     setOpenDropdown(null)
-  }
+  }, [data, selectedColumn, updateData])
 
-  const handleValidateEmails = () => {
+  const handleValidateEmails = useCallback(() => {
     if (!selectedColumn) {
       toast.error('Select a column', {
         description: 'Choose which column contains emails.',
@@ -92,7 +95,6 @@ export function ToolBar() {
     const result = validateEmails(data, selectedColumn)
 
     if (result.invalidCount > 0) {
-      // Highlight invalid email cells
       const invalidIndices = new Set<number>()
       result.invalidReasons.forEach((_, index) => {
         invalidIndices.add(index)
@@ -113,9 +115,9 @@ export function ToolBar() {
       })
     }
     setOpenDropdown(null)
-  }
+  }, [data, selectedColumn, setHighlightedCells])
 
-  const handleRemoveInvalidEmails = () => {
+  const handleRemoveInvalidEmails = useCallback(() => {
     if (!selectedColumn) {
       toast.error('Select a column', {
         description: 'Choose which column contains emails.',
@@ -136,10 +138,77 @@ export function ToolBar() {
       })
     }
     setOpenDropdown(null)
-  }
+  }, [data, selectedColumn, updateData])
 
-  const toggleDropdown = (name: string) => {
-    setOpenDropdown(openDropdown === name ? null : name)
+  const toggleDropdown = useCallback((name: string) => {
+    setOpenDropdown(prev => {
+      const isOpening = prev !== name
+      if (isOpening) {
+        setFocusedIndex(0)
+      } else {
+        setFocusedIndex(-1)
+      }
+      return isOpening ? name : null
+    })
+  }, [])
+
+  // Keyboard navigation for dropdowns
+  useEffect(() => {
+    if (!openDropdown) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const menuItems = menuRef.current?.querySelectorAll('[role="menuitem"]')
+      if (!menuItems?.length) return
+
+      const itemCount = menuItems.length
+
+      switch (e.key) {
+        case 'Escape':
+          e.preventDefault()
+          closeDropdown()
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          setFocusedIndex(prev => (prev + 1) % itemCount)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setFocusedIndex(prev => (prev - 1 + itemCount) % itemCount)
+          break
+        case 'Home':
+          e.preventDefault()
+          setFocusedIndex(0)
+          break
+        case 'End':
+          e.preventDefault()
+          setFocusedIndex(itemCount - 1)
+          break
+        case 'Enter':
+        case ' ':
+          e.preventDefault()
+          if (focusedIndex >= 0) {
+            const item = menuItems[focusedIndex] as HTMLButtonElement
+            item?.click()
+          }
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [openDropdown, focusedIndex, closeDropdown])
+
+  // Focus the current menu item when focusedIndex changes
+  useEffect(() => {
+    if (focusedIndex >= 0 && menuRef.current) {
+      const menuItems = menuRef.current.querySelectorAll('[role="menuitem"]')
+      const item = menuItems[focusedIndex] as HTMLButtonElement
+      item?.focus()
+    }
+  }, [focusedIndex])
+
+  if (!isLoaded) {
+    return null
   }
 
   return (
@@ -181,6 +250,8 @@ export function ToolBar() {
           size="sm"
           onClick={() => toggleDropdown('format')}
           disabled={!selectedColumn}
+          aria-expanded={openDropdown === 'format'}
+          aria-haspopup="menu"
         >
           <Type className="h-4 w-4" />
           Format
@@ -196,33 +267,42 @@ export function ToolBar() {
           <>
             <div
               className="fixed inset-0 z-40"
-              onClick={() => setOpenDropdown(null)}
+              onClick={closeDropdown}
             />
-            <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md border border-zinc-200 bg-white py-1 shadow-lg">
+            <div
+              ref={menuRef}
+              className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
+              role="menu"
+              aria-label="Format options"
+            >
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
                 onClick={() => handleFormat(toLowerCase)}
+                role="menuitem"
               >
                 <ArrowDownAZ className="h-4 w-4" />
                 lowercase
               </button>
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
                 onClick={() => handleFormat(toUpperCase)}
+                role="menuitem"
               >
                 <ArrowUpAZ className="h-4 w-4" />
                 UPPERCASE
               </button>
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
                 onClick={() => handleFormat(toTitleCase)}
+                role="menuitem"
               >
                 <CaseSensitive className="h-4 w-4" />
                 Title Case
               </button>
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
                 onClick={() => handleFormat(trimWhitespace)}
+                role="menuitem"
               >
                 <RemoveFormatting className="h-4 w-4" />
                 Trim whitespace
@@ -239,6 +319,8 @@ export function ToolBar() {
           size="sm"
           onClick={() => toggleDropdown('email')}
           disabled={!selectedColumn}
+          aria-expanded={openDropdown === 'email'}
+          aria-haspopup="menu"
         >
           <Mail className="h-4 w-4" />
           Email
@@ -254,19 +336,26 @@ export function ToolBar() {
           <>
             <div
               className="fixed inset-0 z-40"
-              onClick={() => setOpenDropdown(null)}
+              onClick={closeDropdown}
             />
-            <div className="absolute left-0 top-full z-50 mt-1 w-52 rounded-md border border-zinc-200 bg-white py-1 shadow-lg">
+            <div
+              ref={menuRef}
+              className="absolute left-0 top-full z-50 mt-1 w-52 rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
+              role="menu"
+              aria-label="Email options"
+            >
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
                 onClick={handleValidateEmails}
+                role="menuitem"
               >
                 <Mail className="h-4 w-4" />
                 Validate emails
               </button>
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 focus:bg-red-100 focus:outline-none"
                 onClick={handleRemoveInvalidEmails}
+                role="menuitem"
               >
                 <Scissors className="h-4 w-4" />
                 Remove invalid emails
@@ -277,4 +366,4 @@ export function ToolBar() {
       </div>
     </div>
   )
-}
+})

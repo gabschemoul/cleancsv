@@ -1,18 +1,25 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Upload, FileSpreadsheet, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useCsvContext } from '@/context/CsvContext'
+import { useCsvContext } from '@/hooks/useCsvContext'
 import { parseFile, validateFile } from '@/processing/parseFile'
 import { formatNumber } from '@/lib/utils'
+import { FILE_CONFIG } from '@/config/constants'
 
 export function DropZone() {
   const { setData, isLoaded } = useCsvContext()
   const [isLoading, setIsLoading] = useState(false)
+  const processingRef = useRef(false)
 
   const handleFile = useCallback(
     async (file: File) => {
+      // Prevent concurrent file processing
+      if (processingRef.current) {
+        return
+      }
+
       const validation = validateFile(file)
       if (!validation.valid) {
         toast.error('Invalid file', {
@@ -21,6 +28,7 @@ export function DropZone() {
         return
       }
 
+      processingRef.current = true
       setIsLoading(true)
       const startTime = performance.now()
 
@@ -52,6 +60,7 @@ export function DropZone() {
             error instanceof Error ? error.message : 'Unknown error occurred',
         })
       } finally {
+        processingRef.current = false
         setIsLoading(false)
       }
     },
@@ -79,7 +88,7 @@ export function DropZone() {
         })
       } else if (errorCode === 'file-too-large') {
         toast.error('File too large', {
-          description: `"${rejection.file.name}" exceeds the 10MB limit.`,
+          description: `"${rejection.file.name}" exceeds the ${FILE_CONFIG.MAX_SIZE_MB}MB limit.`,
         })
       } else {
         toast.error('File rejected', {
@@ -94,12 +103,9 @@ export function DropZone() {
     useDropzone({
       onDrop,
       onDropRejected,
-      accept: {
-        'text/csv': ['.csv'],
-        'text/plain': ['.txt'],
-      },
+      accept: FILE_CONFIG.ACCEPTED_MIME_TYPES,
       maxFiles: 1,
-      maxSize: 10 * 1024 * 1024, // 10MB
+      maxSize: FILE_CONFIG.MAX_SIZE_BYTES,
       disabled: isLoading,
     })
 

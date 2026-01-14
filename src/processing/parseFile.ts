@@ -1,5 +1,6 @@
 import Papa from 'papaparse'
 import type { CsvRow } from '@/types/csv.types'
+import { FILE_CONFIG } from '@/config/constants'
 
 export interface ParseResult {
   rows: CsvRow[]
@@ -7,13 +8,20 @@ export interface ParseResult {
   errors: string[]
 }
 
+const PARSE_TIMEOUT_MS = 30000 // 30 second timeout for parsing
+
 export function parseFile(file: File): Promise<ParseResult> {
   return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Parsing timed out. The file may be too large or complex.'))
+    }, PARSE_TIMEOUT_MS)
+
     Papa.parse<CsvRow>(file, {
       header: true,
       skipEmptyLines: true,
       transformHeader: (header) => header.trim(),
       complete: (results) => {
+        clearTimeout(timeoutId)
         const columns = results.meta.fields ?? []
         const rows = results.data.filter((row) => {
           // Filter out completely empty rows
@@ -27,6 +35,7 @@ export function parseFile(file: File): Promise<ParseResult> {
         resolve({ rows, columns, errors })
       },
       error: (error) => {
+        clearTimeout(timeoutId)
         reject(new Error(`Failed to parse CSV: ${error.message}`))
       },
     })
@@ -34,18 +43,15 @@ export function parseFile(file: File): Promise<ParseResult> {
 }
 
 export function validateFile(file: File): { valid: boolean; error?: string } {
-  const maxSize = 10 * 1024 * 1024 // 10MB
-  const validExtensions = ['.csv', '.txt']
-
-  if (file.size > maxSize) {
+  if (file.size > FILE_CONFIG.MAX_SIZE_BYTES) {
     return {
       valid: false,
-      error: `File too large. Maximum size is 10MB, your file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`,
+      error: `File too large. Maximum size is ${FILE_CONFIG.MAX_SIZE_MB}MB, your file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`,
     }
   }
 
   const extension = '.' + file.name.split('.').pop()?.toLowerCase()
-  if (!validExtensions.includes(extension)) {
+  if (!(FILE_CONFIG.ACCEPTED_EXTENSIONS as readonly string[]).includes(extension)) {
     return {
       valid: false,
       error: `Invalid file type. Please upload a CSV file (.csv or .txt).`,

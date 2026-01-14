@@ -12,7 +12,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useCsvContext } from '@/context/CsvContext'
+import { useCsvContext } from '@/hooks/useCsvContext'
 import { formatNumber } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { downloadCsv } from '@/processing/exportCsv'

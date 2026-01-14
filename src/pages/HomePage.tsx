@@ -1,4 +1,4 @@
-import { useCsvContext } from '@/context/CsvContext'
+import { useCsvContext } from '@/hooks/useCsvContext'
 import { ToolPageLayout } from '@/components/layout/ToolPageLayout'
 import { DropZone } from '@/components/DropZone'
 import { DataTable } from '@/components/DataTable'

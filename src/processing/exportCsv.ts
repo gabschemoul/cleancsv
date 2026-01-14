@@ -7,18 +7,29 @@ export function exportToCsv(rows: CsvRow[], columns: string[]): Blob {
   // Create header row
   const header = columns.join(',')
 
+  // Helper to escape CSV value and prevent formula injection
+  const escapeValue = (value: string): string => {
+    // Prevent formula injection: prefix with ' if starts with =, +, -, @, tab, or CR
+    const needsFormulaProtection = /^[=+\-@\t\r]/.test(value)
+
+    // Needs quoting if contains special chars or needs formula protection
+    const needsQuotes =
+      value.includes(',') ||
+      value.includes('"') ||
+      value.includes('\n') ||
+      needsFormulaProtection
+
+    if (needsQuotes) {
+      const escaped = value.replace(/"/g, '""')
+      // Add ' prefix inside quotes to prevent formula execution
+      return needsFormulaProtection ? `"'${escaped}"` : `"${escaped}"`
+    }
+    return value
+  }
+
   // Create data rows
   const dataRows = rows.map((row) =>
-    columns
-      .map((col) => {
-        const value = row[col] ?? ''
-        // Escape quotes and wrap in quotes if contains comma, quote, or newline
-        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-          return `"${value.replace(/"/g, '""')}"`
-        }
-        return value
-      })
-      .join(',')
+    columns.map((col) => escapeValue(row[col] ?? '')).join(',')
   )
 
   const csv = BOM + [header, ...dataRows].join('\n')
@@ -41,5 +52,6 @@ export function downloadCsv(
   link.click()
   document.body.removeChild(link)
 
-  URL.revokeObjectURL(url)
+  // Delay revoke to ensure download has started
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

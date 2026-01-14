@@ -1,12 +1,11 @@
 import {
-  createContext,
-  useContext,
   useReducer,
   useState,
   useCallback,
   type ReactNode,
 } from 'react'
 import type { CsvRow, FileStats } from '@/types/csv.types'
+import { CsvContext } from './csvContextValue'
 
 interface CsvState {
   data: CsvRow[]
@@ -20,32 +19,6 @@ interface HighlightedCells {
   rowIndices: Set<number>
   type: 'error' | 'warning'
 }
-
-interface CsvContextType {
-  // Current state
-  data: CsvRow[]
-  columns: string[]
-  filename: string
-  isLoaded: boolean
-  fileStats: FileStats | null
-
-  // Highlighting for validation feedback
-  highlightedCells: HighlightedCells | null
-  setHighlightedCells: (cells: HighlightedCells | null) => void
-
-  // Actions
-  setData: (rows: CsvRow[], columns: string[], filename: string, fileSize?: number) => void
-  updateData: (rows: CsvRow[]) => void
-  clearData: () => void
-
-  // History (for undo)
-  canUndo: boolean
-  canRedo: boolean
-  undo: () => void
-  redo: () => void
-}
-
-const CsvContext = createContext<CsvContextType | null>(null)
 
 const MAX_HISTORY = 10
 
@@ -219,12 +192,4 @@ export function CsvProvider({ children }: CsvProviderProps) {
       {children}
     </CsvContext.Provider>
   )
-}
-
-export function useCsvContext() {
-  const context = useContext(CsvContext)
-  if (!context) {
-    throw new Error('useCsvContext must be used within a CsvProvider')
-  }
-  return context
 }

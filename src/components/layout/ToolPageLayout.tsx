@@ -11,10 +11,11 @@ interface ToolPageLayoutProps {
   seo?: SeoConfig
 }
 
-// Helper to update or create meta tag
+// Helper to update or create meta tag (with CSS.escape for safety)
 function updateMetaTag(name: string, content: string, property = false) {
   const attr = property ? 'property' : 'name'
-  let element = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null
+  const escapedName = CSS.escape(name)
+  let element = document.querySelector(`meta[${attr}="${escapedName}"]`) as HTMLMetaElement | null
   if (!element) {
     element = document.createElement('meta')
     element.setAttribute(attr, name)
@@ -23,9 +24,10 @@ function updateMetaTag(name: string, content: string, property = false) {
   element.content = content
 }
 
-// Helper to update or create link tag
+// Helper to update or create link tag (with CSS.escape for safety)
 function updateLinkTag(rel: string, href: string) {
-  let element = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null
+  const escapedRel = CSS.escape(rel)
+  let element = document.querySelector(`link[rel="${escapedRel}"]`) as HTMLLinkElement | null
   if (!element) {
     element = document.createElement('link')
     element.rel = rel
@@ -57,15 +59,28 @@ export function ToolPageLayout({ children, seo }: ToolPageLayoutProps) {
 
   // Update document head on route change
   useEffect(() => {
+    const OG_IMAGE = 'https://cleancsv.com/og-image.png'
+
     // Title
     document.title = seoConfig.title
 
     // Meta tags
     updateMetaTag('description', seoConfig.description)
+
+    // Open Graph
     updateMetaTag('og:title', seoConfig.title, true)
     updateMetaTag('og:description', seoConfig.description, true)
     updateMetaTag('og:url', seoConfig.canonical, true)
     updateMetaTag('og:type', 'website', true)
+    updateMetaTag('og:image', OG_IMAGE, true)
+    updateMetaTag('og:image:alt', 'CleanCSV - Clean your CSV files online', true)
+    updateMetaTag('og:site_name', 'CleanCSV', true)
+
+    // Twitter Cards
+    updateMetaTag('twitter:card', 'summary_large_image')
+    updateMetaTag('twitter:title', seoConfig.title)
+    updateMetaTag('twitter:description', seoConfig.description)
+    updateMetaTag('twitter:image', OG_IMAGE)
 
     // Canonical
     updateLinkTag('canonical', seoConfig.canonical)

@@ -4,6 +4,7 @@ import { CsvProvider } from '@/context/CsvContext'
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { HomePage } from '@/pages/HomePage'
 import { ToolPage } from '@/pages/ToolPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 import { ROUTES, TOOL_ROUTES } from '@/config/routes'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                 element={<ToolPage tool={tool} />}
               />
             ))}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
 
           <Toaster
