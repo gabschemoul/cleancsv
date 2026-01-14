@@ -1,4 +1,4 @@
-import { memo, useRef, useCallback } from 'react'
+import { memo, useRef, useCallback, useMemo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useCsvContext } from '@/hooks/useCsvContext'
 import { cn } from '@/lib/utils'
@@ -7,11 +7,17 @@ interface DataTableProps {
   maxHeight?: string
 }
 
-const ROW_HEIGHT = 41 // Height of each row in pixels
+const ROW_HEIGHT = 36
+const ROW_NUMBER_WIDTH = 60
+const COLUMN_WIDTH = 180
 
 export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTableProps) {
   const { data, columns, isLoaded, highlightedCells } = useCsvContext()
   const parentRef = useRef<HTMLDivElement>(null)
+
+  const totalWidth = useMemo(() => {
+    return ROW_NUMBER_WIDTH + columns.length * COLUMN_WIDTH
+  }, [columns.length])
 
   const isCellHighlighted = useCallback((rowIndex: number, column: string) => {
     if (!highlightedCells) return false
@@ -31,8 +37,6 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
 
   const virtualRows = rowVirtualizer.getVirtualItems()
 
-  const gridColumns = `50px repeat(${columns.length}, minmax(200px, max-content))`
-
   return (
     <div
       ref={parentRef}
@@ -43,20 +47,26 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
       aria-rowcount={data.length + 1}
       tabIndex={0}
     >
-      <div style={{ minWidth: 'max-content' }}>
+      <div style={{ minWidth: totalWidth }}>
         {/* Header */}
         <div
-          className="sticky top-0 z-10 grid border-b border-slate-200 bg-slate-100 text-xs font-semibold uppercase tracking-wider"
-          style={{ gridTemplateColumns: gridColumns }}
+          className="sticky top-0 z-10 border-b border-slate-200 bg-slate-100"
+          style={{ display: 'table', width: '100%', tableLayout: 'fixed' }}
           role="row"
         >
-          <div className="px-3 py-3 text-slate-500" role="columnheader" aria-label="Row number">
+          <div
+            className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500"
+            style={{ display: 'table-cell', width: ROW_NUMBER_WIDTH, verticalAlign: 'middle' }}
+            role="columnheader"
+            aria-label="Row number"
+          >
             #
           </div>
           {columns.map((column) => (
             <div
               key={column}
-              className="px-4 py-3 text-slate-700"
+              className="truncate px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-700"
+              style={{ display: 'table-cell', width: COLUMN_WIDTH, verticalAlign: 'middle' }}
               title={column}
               role="columnheader"
             >
@@ -68,7 +78,7 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
         {/* Virtualized Body */}
         <div
           style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
+            height: rowVirtualizer.getTotalSize(),
             position: 'relative',
           }}
         >
@@ -81,19 +91,25 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
                 role="row"
                 aria-rowindex={rowIndex + 2}
                 className={cn(
-                  'grid border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
+                  'border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
                   rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
                 )}
                 style={{
-                  gridTemplateColumns: gridColumns,
+                  display: 'table',
+                  width: '100%',
+                  tableLayout: 'fixed',
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                  height: `${virtualRow.size}px`,
+                  height: ROW_HEIGHT,
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
               >
-                <div className="px-3 py-2 text-xs text-slate-400" role="gridcell">
+                <div
+                  className="px-3 py-2 text-xs text-slate-400"
+                  style={{ display: 'table-cell', width: ROW_NUMBER_WIDTH, verticalAlign: 'middle' }}
+                  role="gridcell"
+                >
                   {rowIndex + 1}
                 </div>
                 {columns.map((column) => {
@@ -103,11 +119,11 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
                       key={`${rowIndex}-${column}`}
                       role="gridcell"
                       className={cn(
-                        'px-4 py-2 whitespace-nowrap',
-                        isHighlighted
-                          ? 'bg-red-50 text-red-700'
-                          : 'text-slate-700'
+                        'truncate px-4 py-2',
+                        isHighlighted ? 'bg-red-50 text-red-700' : 'text-slate-700'
                       )}
+                      style={{ display: 'table-cell', width: COLUMN_WIDTH, verticalAlign: 'middle' }}
+                      title={row[column] || undefined}
                     >
                       {row[column] || (
                         <span className={isHighlighted ? 'text-red-300' : 'text-slate-300'}>-</span>
