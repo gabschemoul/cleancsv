@@ -31,6 +31,8 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
 
   const virtualRows = rowVirtualizer.getVirtualItems()
 
+  const gridColumns = `50px repeat(${columns.length}, minmax(200px, max-content))`
+
   return (
     <div
       ref={parentRef}
@@ -41,82 +43,82 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
       aria-rowcount={data.length + 1}
       tabIndex={0}
     >
-      {/* Header */}
-      <div
-        className="sticky top-0 z-10 grid border-b border-slate-200 bg-slate-100 text-xs font-semibold uppercase tracking-wider"
-        style={{ gridTemplateColumns: `60px repeat(${columns.length}, minmax(120px, 1fr))` }}
-        role="row"
-      >
-        <div className="px-3 py-3 text-slate-500" role="columnheader" aria-label="Row number">
-          #
-        </div>
-        {columns.map((column) => (
-          <div
-            key={column}
-            className="truncate px-4 py-3 text-slate-700"
-            title={column}
-            role="columnheader"
-          >
-            {column}
+      <div style={{ minWidth: 'max-content' }}>
+        {/* Header */}
+        <div
+          className="sticky top-0 z-10 grid border-b border-slate-200 bg-slate-100 text-xs font-semibold uppercase tracking-wider"
+          style={{ gridTemplateColumns: gridColumns }}
+          role="row"
+        >
+          <div className="px-3 py-3 text-slate-500" role="columnheader" aria-label="Row number">
+            #
           </div>
-        ))}
-      </div>
-
-      {/* Virtualized Body */}
-      <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          position: 'relative',
-        }}
-      >
-        {virtualRows.map((virtualRow) => {
-          const rowIndex = virtualRow.index
-          const row = data[rowIndex]
-          return (
+          {columns.map((column) => (
             <div
-              key={rowIndex}
-              role="row"
-              aria-rowindex={rowIndex + 2}
-              className={cn(
-                'grid border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
-                rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
-              )}
-              style={{
-                gridTemplateColumns: `60px repeat(${columns.length}, minmax(120px, 1fr))`,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
+              key={column}
+              className="px-4 py-3 text-slate-700"
+              title={column}
+              role="columnheader"
             >
-              <div className="px-3 py-2 text-xs text-slate-400" role="gridcell">
-                {rowIndex + 1}
-              </div>
-              {columns.map((column) => {
-                const isHighlighted = isCellHighlighted(rowIndex, column)
-                return (
-                  <div
-                    key={`${rowIndex}-${column}`}
-                    role="gridcell"
-                    className={cn(
-                      'truncate px-4 py-2',
-                      isHighlighted
-                        ? 'bg-red-50 text-red-700'
-                        : 'text-slate-700'
-                    )}
-                    title={row[column]}
-                  >
-                    {row[column] || (
-                      <span className={isHighlighted ? 'text-red-300' : 'text-slate-300'}>-</span>
-                    )}
-                  </div>
-                )
-              })}
+              {column}
             </div>
-          )
-        })}
+          ))}
+        </div>
+
+        {/* Virtualized Body */}
+        <div
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            position: 'relative',
+          }}
+        >
+          {virtualRows.map((virtualRow) => {
+            const rowIndex = virtualRow.index
+            const row = data[rowIndex]
+            return (
+              <div
+                key={rowIndex}
+                role="row"
+                aria-rowindex={rowIndex + 2}
+                className={cn(
+                  'grid border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
+                  rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
+                )}
+                style={{
+                  gridTemplateColumns: gridColumns,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                <div className="px-3 py-2 text-xs text-slate-400" role="gridcell">
+                  {rowIndex + 1}
+                </div>
+                {columns.map((column) => {
+                  const isHighlighted = isCellHighlighted(rowIndex, column)
+                  return (
+                    <div
+                      key={`${rowIndex}-${column}`}
+                      role="gridcell"
+                      className={cn(
+                        'px-4 py-2 whitespace-nowrap',
+                        isHighlighted
+                          ? 'bg-red-50 text-red-700'
+                          : 'text-slate-700'
+                      )}
+                    >
+                      {row[column] || (
+                        <span className={isHighlighted ? 'text-red-300' : 'text-slate-300'}>-</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
