@@ -34,90 +34,90 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
   return (
     <div
       ref={parentRef}
-      className="overflow-auto rounded-lg border border-zinc-200"
+      className="overflow-auto rounded-lg border border-slate-200"
       style={{ maxHeight }}
-      role="region"
+      role="grid"
       aria-label="CSV data table"
+      aria-rowcount={data.length + 1}
       tabIndex={0}
     >
-      <table className="w-full border-collapse text-sm" role="grid" aria-rowcount={data.length + 1}>
-        <thead className="sticky top-0 z-10 bg-zinc-100">
-          <tr role="row">
-            <th
-              className="w-12 border-b border-zinc-200 bg-zinc-100 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500"
-              scope="col"
-              aria-label="Row number"
+      {/* Header */}
+      <div
+        className="sticky top-0 z-10 grid border-b border-slate-200 bg-slate-100 text-xs font-semibold uppercase tracking-wider"
+        style={{ gridTemplateColumns: `60px repeat(${columns.length}, minmax(120px, 1fr))` }}
+        role="row"
+      >
+        <div className="px-3 py-3 text-slate-500" role="columnheader" aria-label="Row number">
+          #
+        </div>
+        {columns.map((column) => (
+          <div
+            key={column}
+            className="truncate px-4 py-3 text-slate-700"
+            title={column}
+            role="columnheader"
+          >
+            {column}
+          </div>
+        ))}
+      </div>
+
+      {/* Virtualized Body */}
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          position: 'relative',
+        }}
+      >
+        {virtualRows.map((virtualRow) => {
+          const rowIndex = virtualRow.index
+          const row = data[rowIndex]
+          return (
+            <div
+              key={rowIndex}
+              role="row"
+              aria-rowindex={rowIndex + 2}
+              className={cn(
+                'grid border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
+                rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
+              )}
+              style={{
+                gridTemplateColumns: `60px repeat(${columns.length}, minmax(120px, 1fr))`,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
             >
-              #
-            </th>
-            {columns.map((column) => (
-              <th
-                key={column}
-                className="max-w-xs border-b border-zinc-200 bg-zinc-100 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-700"
-                title={column}
-                scope="col"
-              >
-                <span className="block truncate">{column}</span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: 'relative',
-          }}
-        >
-          {virtualRows.map((virtualRow) => {
-            const rowIndex = virtualRow.index
-            const row = data[rowIndex]
-            return (
-              <tr
-                key={rowIndex}
-                role="row"
-                aria-rowindex={rowIndex + 2}
-                className={cn(
-                  'transition-colors hover:bg-zinc-50',
-                  rowIndex % 2 === 0 ? 'bg-white' : 'bg-zinc-50/50'
-                )}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                  display: 'table-row',
-                }}
-              >
-                <td className="border-b border-zinc-100 px-3 py-2 text-xs text-zinc-400">
-                  {rowIndex + 1}
-                </td>
-                {columns.map((column) => {
-                  const isHighlighted = isCellHighlighted(rowIndex, column)
-                  return (
-                    <td
-                      key={`${rowIndex}-${column}`}
-                      className={cn(
-                        'border-b border-zinc-100 px-4 py-2',
-                        isHighlighted
-                          ? 'bg-red-50 text-red-700'
-                          : 'text-zinc-700'
-                      )}
-                    >
-                      <span className="block max-w-xs truncate" title={row[column]}>
-                        {row[column] || (
-                          <span className={isHighlighted ? 'text-red-300' : 'text-zinc-300'}>-</span>
-                        )}
-                      </span>
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+              <div className="px-3 py-2 text-xs text-slate-400" role="gridcell">
+                {rowIndex + 1}
+              </div>
+              {columns.map((column) => {
+                const isHighlighted = isCellHighlighted(rowIndex, column)
+                return (
+                  <div
+                    key={`${rowIndex}-${column}`}
+                    role="gridcell"
+                    className={cn(
+                      'truncate px-4 py-2',
+                      isHighlighted
+                        ? 'bg-red-50 text-red-700'
+                        : 'text-slate-700'
+                    )}
+                    title={row[column]}
+                  >
+                    {row[column] || (
+                      <span className={isHighlighted ? 'text-red-300' : 'text-slate-300'}>-</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 })
