@@ -14,18 +14,21 @@ export function HomePage() {
 
   return (
     <ToolPageLayout>
-      <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
-        {!isLoaded && (
-          <>
-            <h1 className="mb-2 text-2xl font-semibold text-zinc-900">
-              Clean your CSV files
-            </h1>
-            <p className="mb-6 text-zinc-600">
-              Upload your file to get started. Your data stays 100% private.
-            </p>
-          </>
-        )}
+      {/* Hero Section */}
+      {!isLoaded && (
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            Clean your CSV files
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-500">
+            Deduplicate, format, and clean your spreadsheets in seconds.
+            100% private — your data never leaves your browser.
+          </p>
+        </div>
+      )}
 
+      {/* Main Card */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xl shadow-slate-200/50">
         <DropZone />
 
         {isLoaded && (

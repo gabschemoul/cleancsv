@@ -31,15 +31,18 @@ export function PrivacyBadge({ variant = 'compact' }: PrivacyBadgeProps) {
       <button
         onClick={() => setShowDetails(!showDetails)}
         className={cn(
-          'flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition-colors',
-          'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+          'flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200',
+          'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'
         )}
       >
-        <Shield className="h-4 w-4" />
+        <span className="relative flex h-4 w-4">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
+          <Shield className="relative h-4 w-4" />
+        </span>
         <span className="hidden sm:inline">100% Private</span>
         <ChevronDown
           className={cn(
-            'h-3 w-3 transition-transform',
+            'h-3 w-3 transition-transform duration-200',
             showDetails && 'rotate-180'
           )}
         />
