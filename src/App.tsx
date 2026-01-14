@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { CsvProvider } from '@/context/CsvContext'
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
@@ -34,6 +35,7 @@ function App() {
             }}
           />
         </CsvProvider>
+        <Analytics />
       </BrowserRouter>
     </ErrorBoundary>
   )
