@@ -6,7 +6,7 @@ export interface SeoConfig {
   canonical: string
 }
 
-const BASE_URL = 'https://cleancsv.com'
+const BASE_URL = 'https://cleancsv.io'
 
 export const SEO_CONFIG: Record<RoutePath, SeoConfig> = {
   [ROUTES.HOME]: {

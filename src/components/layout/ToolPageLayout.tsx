@@ -59,7 +59,7 @@ export function ToolPageLayout({ children, seo }: ToolPageLayoutProps) {
 
   // Update document head on route change
   useEffect(() => {
-    const OG_IMAGE = 'https://cleancsv.com/og-image.png'
+    const OG_IMAGE = 'https://cleancsv.io/og-image.png'
 
     // Title
     document.title = seoConfig.title
