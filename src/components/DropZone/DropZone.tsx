@@ -118,9 +118,9 @@ export function DropZone() {
       {...getRootProps()}
       className={cn(
         'relative cursor-pointer rounded-2xl border bg-white p-16 text-center transition-all duration-200',
-        'hover:border-blue-400 hover:ring-4 hover:ring-blue-50',
-        isDragActive && 'border-blue-500 ring-4 ring-blue-100 bg-blue-50/30',
-        isDragAccept && 'border-blue-600 ring-4 ring-blue-100 bg-blue-50/50',
+        'hover:border-[#CE47FF]/50 hover:ring-4 hover:ring-[#CE47FF]/10',
+        isDragActive && 'border-[#CE47FF] ring-4 ring-[#CE47FF]/20 bg-[#CE47FF]/5',
+        isDragAccept && 'border-[#CE47FF] ring-4 ring-[#CE47FF]/20 bg-[#CE47FF]/10',
         isLoading && 'cursor-wait opacity-75',
         !isDragActive && 'border-slate-200 shadow-lg shadow-slate-100'
       )}
@@ -144,11 +144,11 @@ export function DropZone() {
           </>
         ) : isDragActive ? (
           <>
-            <div className="rounded-full bg-gradient-to-br from-blue-100 to-blue-50 p-5 shadow-inner">
-              <FileSpreadsheet className="h-10 w-10 text-blue-600" />
+            <div className="rounded-full bg-gradient-to-br from-[#CE47FF]/20 to-[#CE47FF]/10 p-5 shadow-inner">
+              <FileSpreadsheet className="h-10 w-10 text-[#CE47FF]" />
             </div>
             <div>
-              <p className="text-xl font-semibold tracking-tight text-blue-700">
+              <p className="text-xl font-semibold tracking-tight text-[#CE47FF]">
                 Drop your file here
               </p>
             </div>
@@ -163,7 +163,7 @@ export function DropZone() {
                 Drag & drop your CSV file here
               </p>
               <p className="mt-2 text-slate-500">
-                or <span className="text-blue-600 underline underline-offset-2">click to browse</span> (max 10MB)
+                or <span className="text-[#CE47FF] underline underline-offset-2">click to browse</span> (max 10MB)
               </p>
             </div>
           </>
