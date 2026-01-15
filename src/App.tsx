@@ -5,6 +5,7 @@ import { CsvProvider } from '@/context/CsvContext'
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { HomePage } from '@/pages/HomePage'
 import { ToolPage } from '@/pages/ToolPage'
+import { MergePage } from '@/pages/MergePage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { ROUTES, TOOL_ROUTES } from '@/config/routes'
 
@@ -15,7 +16,8 @@ function App() {
         <CsvProvider>
           <Routes>
             <Route path={ROUTES.HOME} element={<HomePage />} />
-            {TOOL_ROUTES.map((tool) => (
+            <Route path={ROUTES.MERGE} element={<MergePage />} />
+            {TOOL_ROUTES.filter((tool) => tool.path !== ROUTES.MERGE).map((tool) => (
               <Route
                 key={tool.path}
                 path={tool.path}
