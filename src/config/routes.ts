@@ -44,7 +44,7 @@ export const TOOL_ROUTES: ToolRoute[] = [
   {
     path: ROUTES.CONVERT,
     name: 'Convert to Excel',
-    shortName: 'Excel',
+    shortName: 'Export',
     description: 'Download your CSV as an Excel file',
   },
 ]

@@ -30,6 +30,9 @@ export function FileInfo() {
   }
 
   const handleClear = () => {
+    if (!window.confirm('Clear all data? This action cannot be undone.')) {
+      return
+    }
     clearData()
     toast.success('File cleared', {
       description: 'Ready to upload a new file.',
@@ -157,33 +160,6 @@ export function FileInfo() {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Export buttons */}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleExportCsv}
-          title="Download as CSV"
-        >
-          <Download className="h-4 w-4" />
-          <span className="ml-1">CSV</span>
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleExportExcel}
-          disabled={isExportingExcel}
-          title="Download as Excel"
-        >
-          {isExportingExcel ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <FileDown className="h-4 w-4" />
-          )}
-          <span className="ml-1">Excel</span>
-        </Button>
-
-        <div className="h-4 w-px bg-zinc-200" />
-
         {/* Undo/Redo */}
         <Button
           variant="ghost"
@@ -206,15 +182,43 @@ export function FileInfo() {
 
         <div className="h-4 w-px bg-zinc-200" />
 
-        {/* Clear */}
+        {/* Export buttons - Primary action */}
+        <Button
+          variant="default"
+          size="sm"
+          onClick={handleExportCsv}
+          title="Download as CSV"
+          className="bg-emerald-600 hover:bg-emerald-700"
+        >
+          <Download className="h-4 w-4" />
+          <span className="ml-1.5">Download CSV</span>
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleExportExcel}
+          disabled={isExportingExcel}
+          title="Download as Excel"
+        >
+          {isExportingExcel ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="h-4 w-4" />
+          )}
+          <span className="ml-1">Excel</span>
+        </Button>
+
+        <div className="h-4 w-px bg-zinc-200" />
+
+        {/* Clear - Destructive action, separated */}
         <Button
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="text-zinc-500 hover:text-red-600"
+          className="text-zinc-400 hover:bg-red-50 hover:text-red-600"
+          title="Clear all data"
         >
           <X className="h-4 w-4" />
-          <span className="ml-1">Clear</span>
         </Button>
       </div>
     </div>
