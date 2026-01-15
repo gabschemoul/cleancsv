@@ -7,8 +7,8 @@ interface DataTableProps {
   maxHeight?: string
 }
 
-const ROW_HEIGHT = 36
-const ROW_NUMBER_WIDTH = 60
+const ROW_HEIGHT = 44
+const ROW_NUMBER_WIDTH = 64
 const COLUMN_WIDTH = 180
 
 export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTableProps) {
@@ -40,7 +40,7 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
   return (
     <div
       ref={parentRef}
-      className="overflow-auto rounded-lg border border-slate-200"
+      className="overflow-auto rounded-2xl border border-slate-200 bg-white"
       style={{ maxHeight }}
       role="grid"
       aria-label="CSV data table"
@@ -50,12 +50,12 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
       <div style={{ minWidth: totalWidth }}>
         {/* Header */}
         <div
-          className="sticky top-0 z-10 border-b border-slate-200 bg-slate-100"
+          className="sticky top-0 z-10 border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm"
           style={{ display: 'table', width: '100%', tableLayout: 'fixed' }}
           role="row"
         >
           <div
-            className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500"
+            className="px-4 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400"
             style={{ display: 'table-cell', width: ROW_NUMBER_WIDTH, verticalAlign: 'middle' }}
             role="columnheader"
             aria-label="Row number"
@@ -65,7 +65,7 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
           {columns.map((column) => (
             <div
               key={column}
-              className="truncate px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-700"
+              className="truncate px-4 py-4 text-xs font-semibold uppercase tracking-wider text-slate-600"
               style={{ display: 'table-cell', width: COLUMN_WIDTH, verticalAlign: 'middle' }}
               title={column}
               role="columnheader"
@@ -91,8 +91,8 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
                 role="row"
                 aria-rowindex={rowIndex + 2}
                 className={cn(
-                  'border-b border-slate-100 text-sm transition-colors hover:bg-slate-50',
-                  rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
+                  'border-b border-slate-100 text-sm transition-colors hover:bg-slate-50/50',
+                  rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
                 )}
                 style={{
                   display: 'table',
@@ -106,7 +106,7 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
                 }}
               >
                 <div
-                  className="px-3 py-2 text-xs text-slate-400"
+                  className="px-4 py-3 text-xs font-medium text-slate-400"
                   style={{ display: 'table-cell', width: ROW_NUMBER_WIDTH, verticalAlign: 'middle' }}
                   role="gridcell"
                 >
@@ -119,7 +119,7 @@ export const DataTable = memo(function DataTable({ maxHeight = '500px' }: DataTa
                       key={`${rowIndex}-${column}`}
                       role="gridcell"
                       className={cn(
-                        'truncate px-4 py-2',
+                        'truncate px-4 py-3',
                         isHighlighted ? 'bg-red-50 text-red-700' : 'text-slate-700'
                       )}
                       style={{ display: 'table-cell', width: COLUMN_WIDTH, verticalAlign: 'middle' }}

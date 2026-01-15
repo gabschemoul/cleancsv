@@ -1,6 +1,6 @@
 import { useCallback, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { UploadCloud, FileSpreadsheet, Loader2 } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Loader2, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useCsvContext } from '@/hooks/useCsvContext'
@@ -117,66 +117,73 @@ export function DropZone() {
     <div
       {...getRootProps()}
       className={cn(
-        'relative cursor-pointer rounded-2xl border bg-white p-16 text-center transition-all duration-200',
-        'hover:border-[#8B5CF6]/50 hover:ring-4 hover:ring-[#8B5CF6]/10',
-        isDragActive && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/5',
-        isDragAccept && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/10',
+        'relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 sm:rounded-3xl sm:p-16 md:p-20',
+        'bg-gradient-to-b from-slate-50/50 to-white',
+        'hover:border-violet-300 hover:bg-gradient-to-b hover:from-violet-50/50 hover:to-white',
+        'hover:shadow-lg hover:shadow-violet-100/50',
+        isDragActive && 'border-violet-500 bg-gradient-to-b from-violet-50 to-white shadow-xl shadow-violet-100/50',
+        isDragAccept && 'border-violet-500 bg-gradient-to-b from-violet-100/50 to-white shadow-xl shadow-violet-200/50',
         isLoading && 'cursor-wait opacity-75',
-        !isDragActive && 'border-slate-200 shadow-lg shadow-slate-100'
+        !isDragActive && !isDragAccept && 'border-slate-200'
       )}
     >
       <input {...getInputProps()} aria-label="Upload CSV file" />
 
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-4 sm:gap-6">
         {isLoading ? (
           <>
-            <div className="rounded-full bg-gradient-to-br from-blue-100 to-blue-50 p-5 shadow-inner">
-              <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-violet-50 shadow-inner sm:h-20 sm:w-20 sm:rounded-2xl">
+              <Loader2 className="h-8 w-8 animate-spin text-violet-600 sm:h-10 sm:w-10" />
             </div>
             <div>
-              <p className="text-xl font-semibold tracking-tight text-slate-900">
+              <p className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
                 Processing file...
               </p>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-base text-slate-500 sm:mt-3 sm:text-lg">
                 This may take a few seconds for large files
               </p>
             </div>
           </>
         ) : isDragActive ? (
           <>
-            <div className="rounded-full bg-gradient-to-br from-[#8B5CF6]/20 to-[#8B5CF6]/10 p-5 shadow-inner">
-              <FileSpreadsheet className="h-10 w-10 text-[#8B5CF6]" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-violet-200 to-violet-100 shadow-inner sm:h-20 sm:w-20 sm:rounded-2xl">
+              <FileSpreadsheet className="h-8 w-8 text-violet-600 sm:h-10 sm:w-10" />
             </div>
             <div>
-              <p className="text-xl font-semibold tracking-tight text-[#8B5CF6]">
+              <p className="text-xl font-semibold tracking-tight text-violet-600 sm:text-2xl">
                 Drop your file here
               </p>
             </div>
           </>
         ) : (
           <>
-            <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50 p-5 shadow-inner">
-              <UploadCloud className="h-10 w-10 text-slate-600" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-violet-50 shadow-inner sm:h-20 sm:w-20 sm:rounded-2xl">
+              <UploadCloud className="h-8 w-8 text-violet-600 sm:h-10 sm:w-10" />
             </div>
             <div>
-              <p className="text-xl font-semibold tracking-tight text-slate-900">
-                Drag & drop your CSV file here
+              <p className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+                Drag & drop your CSV file
               </p>
-              <p className="mt-2 text-slate-500">
-                or <span className="text-[#8B5CF6] underline underline-offset-2">click to browse</span> (max 10MB)
+              <p className="mt-2 text-base text-slate-500 sm:mt-3 sm:text-lg">
+                or{' '}
+                <button className="font-medium text-violet-600 underline underline-offset-4 hover:text-violet-700">
+                  browse files
+                </button>
               </p>
+              <p className="mt-2 text-sm text-slate-400">CSV files up to 10MB</p>
             </div>
           </>
         )}
       </div>
 
-      {/* Privacy message */}
-      <div className="mt-8 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      {/* Privacy badge - redesigned */}
+      <div className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 sm:mt-10 sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3">
+        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-100 sm:h-8 sm:w-8 sm:rounded-xl">
+          <Shield className="h-3 w-3 text-emerald-600 sm:h-4 sm:w-4" />
+        </div>
+        <span className="text-xs font-medium text-emerald-700 sm:text-sm">
+          Your data never leaves your browser
         </span>
-        Your data never leaves your browser
       </div>
     </div>
   )

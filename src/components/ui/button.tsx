@@ -2,7 +2,7 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive'
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
   size?: 'default' | 'sm' | 'lg' | 'icon'
 }
 
@@ -11,22 +11,24 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
           // Variants
           variant === 'default' &&
-            'bg-zinc-900 text-zinc-50 hover:bg-zinc-800',
+            'bg-slate-900 text-white hover:bg-slate-800',
+          variant === 'primary' &&
+            'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-md shadow-violet-200 hover:shadow-lg hover:shadow-violet-300 hover:from-violet-500 hover:to-violet-600',
           variant === 'secondary' &&
-            'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
+            'bg-slate-100 text-slate-900 hover:bg-slate-200',
           variant === 'outline' &&
-            'border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900',
-          variant === 'ghost' && 'hover:bg-zinc-100 hover:text-zinc-900',
+            'border border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-900',
+          variant === 'ghost' && 'hover:bg-slate-100 hover:text-slate-900',
           variant === 'destructive' &&
-            'bg-red-500 text-zinc-50 hover:bg-red-600',
+            'bg-red-500 text-white hover:bg-red-600',
           // Sizes
-          size === 'default' && 'h-10 px-4 py-2',
-          size === 'sm' && 'h-9 rounded-md px-3',
-          size === 'lg' && 'h-11 rounded-md px-8',
-          size === 'icon' && 'h-10 w-10',
+          size === 'default' && 'h-11 px-5 py-2.5',
+          size === 'sm' && 'h-10 rounded-xl px-4',
+          size === 'lg' && 'h-12 rounded-xl px-6 text-base',
+          size === 'icon' && 'h-11 w-11',
           className
         )}
         ref={ref}

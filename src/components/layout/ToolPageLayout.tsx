@@ -1,5 +1,6 @@
-import { type ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ROUTES, TOOL_ROUTES, type RoutePath } from '@/config/routes'
 import { SEO_CONFIG, getJsonLd, type SeoConfig } from '@/config/seo'
@@ -51,11 +52,17 @@ function updateJsonLd(id: string, data: object) {
 export function ToolPageLayout({ children, seo }: ToolPageLayoutProps) {
   const location = useLocation()
   const currentPath = location.pathname as RoutePath
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const seoConfig = seo ?? SEO_CONFIG[currentPath] ?? SEO_CONFIG[ROUTES.HOME]
   const jsonLd = getJsonLd(currentPath)
   const faqs = FAQ_CONTENT[currentPath] || []
   const faqJsonLd = faqs.length > 0 ? getFaqJsonLd(faqs) : null
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   // Update document head on route change
   useEffect(() => {
@@ -97,32 +104,68 @@ export function ToolPageLayout({ children, seo }: ToolPageLayoutProps) {
   }, [seoConfig, jsonLd, faqJsonLd])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white">
-        {/* Header - Sticky with blur */}
-        <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+    <div className="min-h-screen bg-[#FAFBFC]">
+      {/* Header with navigation */}
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-[1920px] items-center justify-between px-4 sm:h-16 sm:px-8">
+          <Link
+            to={ROUTES.HOME}
+            className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl"
+            style={{ fontFamily: 'Vollkorn, Georgia, serif' }}
+          >
+            CleanCSV
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden gap-2 md:flex">
             <Link
               to={ROUTES.HOME}
-              className="text-xl font-bold tracking-tight text-slate-900"
-              style={{ fontFamily: 'Vollkorn, Georgia, serif' }}
+              className={cn(
+                'whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300',
+                location.pathname === ROUTES.HOME
+                  ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-lg shadow-violet-500/25'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              )}
             >
-              CleanCSV
+              All Tools
             </Link>
-            <PrivacyBadge />
-          </div>
-        </header>
+            {TOOL_ROUTES.map((tool) => (
+              <Link
+                key={tool.path}
+                to={tool.path}
+                className={cn(
+                  'whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300',
+                  location.pathname === tool.path
+                    ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-lg shadow-violet-500/25'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                )}
+              >
+                {tool.shortName}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Tool Navigation - Pills style */}
-        <nav className="border-b border-slate-200/80 bg-white/60 backdrop-blur-sm">
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="flex gap-2 overflow-x-auto py-3">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 md:hidden"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <nav className="border-t border-slate-100 bg-white px-4 py-4 md:hidden">
+            <div className="flex flex-col gap-2">
               <Link
                 to={ROUTES.HOME}
                 className={cn(
-                  'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                  'rounded-xl px-4 py-3 text-sm font-medium transition-all',
                   location.pathname === ROUTES.HOME
-                    ? 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/25'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white'
+                    : 'text-slate-600 hover:bg-slate-100'
                 )}
               >
                 All Tools
@@ -132,21 +175,53 @@ export function ToolPageLayout({ children, seo }: ToolPageLayoutProps) {
                   key={tool.path}
                   to={tool.path}
                   className={cn(
-                    'whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                    'rounded-xl px-4 py-3 text-sm font-medium transition-all',
                     location.pathname === tool.path
-                      ? 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/25'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white'
+                      : 'text-slate-600 hover:bg-slate-100'
                   )}
                 >
-                  {tool.shortName}
+                  {tool.name}
                 </Link>
               ))}
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
+      </header>
+
+      {/* Fixed Privacy Badge - Hidden on mobile */}
+      <div className="fixed bottom-4 right-4 z-50 hidden sm:bottom-6 sm:right-6 sm:block">
+        <PrivacyBadge />
+      </div>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-6xl px-4 py-12">{children}</main>
+      <main className="mx-auto max-w-[1920px] px-4 py-8 sm:px-8 sm:py-16">{children}</main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-100 bg-white">
+        <div className="mx-auto max-w-[1920px] px-4 py-8 sm:px-8 sm:py-12">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
+              <span
+                className="text-xl font-bold text-slate-900"
+                style={{ fontFamily: 'Vollkorn, Georgia, serif' }}
+              >
+                CleanCSV
+              </span>
+              <span className="hidden text-slate-400 sm:inline">•</span>
+              <span className="text-sm text-slate-500">
+                Clean your CSV files in seconds
+              </span>
+            </div>
+            <div className="text-sm text-slate-500">
+              100% Private - Your data never leaves your browser
+            </div>
+          </div>
+          <div className="mt-6 text-center text-sm text-slate-400 sm:mt-8">
+            © {new Date().getFullYear()} CleanCSV. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

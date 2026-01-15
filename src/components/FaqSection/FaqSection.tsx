@@ -13,22 +13,27 @@ export function FaqSection({ faqs }: FaqSectionProps) {
   if (faqs.length === 0) return null
 
   return (
-    <section className="mt-12">
-      <h2 className="mb-6 text-xl font-semibold text-zinc-900">
+    <section className="mx-auto mt-20 max-w-3xl">
+      <h2 className="mb-10 text-center text-3xl font-bold tracking-tight text-slate-900">
         Frequently Asked Questions
       </h2>
-      <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white">
+      <div className="space-y-4">
         {faqs.map((faq, index) => (
-          <div key={index}>
+          <div
+            key={index}
+            className="rounded-2xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+          >
             <button
               type="button"
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
-              className="flex w-full items-center justify-between px-6 py-4 text-left transition-colors hover:bg-zinc-50"
+              className="flex w-full items-center justify-between text-left"
             >
-              <span className="font-medium text-zinc-900">{faq.question}</span>
+              <span className="text-lg font-medium text-slate-900">
+                {faq.question}
+              </span>
               <ChevronDown
                 className={cn(
-                  'h-5 w-5 flex-shrink-0 text-zinc-500 transition-transform',
+                  'ml-4 h-5 w-5 flex-shrink-0 text-slate-400 transition-transform duration-200',
                   openIndex === index && 'rotate-180'
                 )}
               />
@@ -40,7 +45,9 @@ export function FaqSection({ faqs }: FaqSectionProps) {
               )}
             >
               <div className="overflow-hidden">
-                <p className="px-6 pb-4 text-zinc-600">{faq.answer}</p>
+                <p className="mt-4 leading-relaxed text-slate-600">
+                  {faq.answer}
+                </p>
               </div>
             </div>
           </div>

@@ -9,12 +9,13 @@ import {
   Download,
   FileDown,
   Loader2,
-  Upload,
+  RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCsvContext } from '@/hooks/useCsvContext'
 import { formatNumber } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { downloadCsv } from '@/processing/exportCsv'
 import { exportToExcel } from '@/processing/exportExcel'
 import { parseFile, validateFile } from '@/processing/parseFile'
@@ -23,6 +24,7 @@ export function FileInfo() {
   const { data, columns, filename, fileStats, isLoaded, clearData, setData, canUndo, canRedo, undo, redo } =
     useCsvContext()
   const [isExportingExcel, setIsExportingExcel] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   if (!isLoaded || !fileStats) {
@@ -30,9 +32,6 @@ export function FileInfo() {
   }
 
   const handleClear = () => {
-    if (!window.confirm('Clear all data? This action cannot be undone.')) {
-      return
-    }
     clearData()
     toast.success('File cleared', {
       description: 'Ready to upload a new file.',
@@ -113,7 +112,7 @@ export function FileInfo() {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-zinc-50 px-4 py-3 text-sm">
+    <div className="flex flex-wrap items-center justify-between gap-6 rounded-2xl bg-slate-50/80 px-6 py-4">
       {/* Hidden file input for replacing */}
       <input
         ref={fileInputRef}
@@ -124,82 +123,95 @@ export function FileInfo() {
         aria-label="Replace CSV file"
       />
 
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2 text-zinc-700">
-          <FileSpreadsheet className="h-4 w-4 text-zinc-500" />
-          <span className="font-medium">{fileStats.filename}</span>
+      {/* Stats section */}
+      <div className="flex flex-wrap items-center gap-6">
+        {/* Filename */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
+            <FileSpreadsheet className="h-5 w-5 text-slate-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">File</p>
+            <p className="font-medium text-slate-900">{fileStats.filename}</p>
+          </div>
           <button
             onClick={handleReplaceClick}
-            className="rounded p-1 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600"
+            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-white hover:text-slate-600 hover:shadow-sm"
             title="Replace file"
             aria-label="Replace file"
           >
-            <Upload className="h-3.5 w-3.5" />
+            <RefreshCw className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="h-4 w-px bg-zinc-200" />
+        <div className="h-10 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-2 text-zinc-600">
-          <Rows3 className="h-4 w-4 text-zinc-400" />
-          <span>
-            <span className="font-medium text-zinc-700">
-              {formatNumber(fileStats.rowCount)}
-            </span>{' '}
-            rows
-          </span>
+        {/* Rows */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
+            <Rows3 className="h-5 w-5 text-slate-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Rows</p>
+            <p className="font-medium text-slate-900">{formatNumber(fileStats.rowCount)}</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 text-zinc-600">
-          <Columns3 className="h-4 w-4 text-zinc-400" />
-          <span>
-            <span className="font-medium text-zinc-700">
-              {formatNumber(fileStats.columnCount)}
-            </span>{' '}
-            columns
-          </span>
+        {/* Columns */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
+            <Columns3 className="h-5 w-5 text-slate-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Columns</p>
+            <p className="font-medium text-slate-900">{formatNumber(fileStats.columnCount)}</p>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Actions section */}
+      <div className="flex items-center gap-3">
         {/* Undo/Redo */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleUndo}
-          disabled={!canUndo}
-          title="Undo (Ctrl+Z)"
-          aria-label="Undo"
-        >
-          <Undo2 className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRedo}
-          disabled={!canRedo}
-          title="Redo (Ctrl+Shift+Z)"
-          aria-label="Redo"
-        >
-          <Redo2 className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleUndo}
+            disabled={!canUndo}
+            title="Undo (Ctrl+Z)"
+            aria-label="Undo"
+            className="h-10 w-10"
+          >
+            <Undo2 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRedo}
+            disabled={!canRedo}
+            title="Redo (Ctrl+Shift+Z)"
+            aria-label="Redo"
+            className="h-10 w-10"
+          >
+            <Redo2 className="h-4 w-4" />
+          </Button>
+        </div>
 
-        <div className="h-4 w-px bg-zinc-200" />
+        <div className="h-8 w-px bg-slate-200" />
 
-        {/* Export buttons - Primary action */}
+        {/* Export buttons */}
         <Button
-          variant="default"
-          size="sm"
+          variant="primary"
+          size="default"
           onClick={handleExportCsv}
           title="Download as CSV"
-          className="bg-emerald-600 hover:bg-emerald-700"
         >
           <Download className="h-4 w-4" />
-          <span className="ml-1.5">Download CSV</span>
+          Download CSV
         </Button>
         <Button
           variant="secondary"
-          size="sm"
+          size="default"
           onClick={handleExportExcel}
           disabled={isExportingExcel}
           title="Download as Excel"
@@ -209,23 +221,35 @@ export function FileInfo() {
           ) : (
             <FileDown className="h-4 w-4" />
           )}
-          <span className="ml-1">Excel</span>
+          Excel
         </Button>
 
-        <div className="h-4 w-px bg-zinc-200" />
+        <div className="h-8 w-px bg-slate-200" />
 
-        {/* Clear - Destructive action, separated */}
+        {/* Clear */}
         <Button
           variant="ghost"
-          size="sm"
-          onClick={handleClear}
-          className="text-zinc-400 hover:bg-red-50 hover:text-red-600"
+          size="icon"
+          onClick={() => setShowClearConfirm(true)}
+          className="h-10 w-10 text-slate-400 hover:bg-red-50 hover:text-red-600"
           title="Clear all data"
           aria-label="Clear all data"
         >
           <X className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Clear Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showClearConfirm}
+        onClose={() => setShowClearConfirm(false)}
+        onConfirm={handleClear}
+        title="Clear all data?"
+        description="This will remove all your current data and you'll need to upload a new file. This action cannot be undone."
+        confirmLabel="Clear data"
+        cancelLabel="Keep editing"
+        variant="danger"
+      />
     </div>
   )
 }

@@ -7,35 +7,35 @@
 
   /* Primary - Violet */
   --color-primary: #8B5CF6;
-  --color-primary-hover: #7C3AED;
-  --color-primary-light: #EDE9FE;
-  --color-primary-subtle: #F5F3FF;
+  --color-primary-dark: #7C3AED;
+  --color-primary-light: #A78BFA;
 
-  /* Colors - Zinc base */
-  --color-background: #fafafa;
-  --color-foreground: #18181b;
-  --color-muted: #71717a;
-  --color-muted-foreground: #a1a1aa;
-  --color-border: #e4e4e7;
+  /* Backgrounds - Layered */
+  --color-background: #FAFBFC;
+  --color-foreground: #0F172A;
+  --color-muted: #64748B;
+  --color-muted-foreground: #94A3B8;
+
+  /* Borders */
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
 
   /* Privacy/Trust - Emerald */
   --color-privacy: #059669;
   --color-privacy-light: #d1fae5;
   --color-privacy-dark: #047857;
 
-  /* Accent */
-  --color-accent: #3b82f6;
-  --color-accent-light: #dbeafe;
-
   /* Status */
   --color-success: #22c55e;
   --color-error: #ef4444;
   --color-warning: #f59e0b;
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Radius - Plus généreux */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
 }
 
 /* Base styles */
@@ -49,6 +49,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Custom shadows - layered system */
+.shadow-card {
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.03),
+    0 2px 4px rgba(0,0,0,0.05),
+    0 12px 24px rgba(0,0,0,0.05);
+}
+
+.shadow-card-hover {
+  box-shadow:
+    0 0 0 1px rgba(139,92,246,0.1),
+    0 4px 8px rgba(0,0,0,0.06),
+    0 20px 40px rgba(0,0,0,0.08);
+}
+
 /* Button press effect */
 button:active:not(:disabled) {
   transform: scale(0.98);
@@ -57,5 +72,5 @@ button:active:not(:disabled) {
 /* Smooth transitions */
 .transition-default {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 200ms;
 }

@@ -97,13 +97,19 @@ export function MergePage() {
 
   return (
     <ToolPageLayout>
-      <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
+      <div
+        className={`rounded-2xl bg-white p-5 shadow-card transition-shadow duration-300 hover:shadow-card-hover sm:rounded-3xl sm:p-10 ${
+          !isLoaded ? 'mx-auto max-w-4xl' : ''
+        }`}
+      >
         {!isLoaded && (
           <>
-            <h1 className="mb-2 text-2xl font-semibold text-zinc-900">
-              {mergeTool.name}
-            </h1>
-            <p className="mb-6 text-zinc-600">{mergeTool.description}</p>
+            <div className="mb-6 text-center sm:mb-8">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                {mergeTool.name}
+              </h1>
+              <p className="mt-3 text-lg text-slate-600">{mergeTool.description}</p>
+            </div>
 
             <MergeDropZone
               pendingFiles={pendingFiles}
@@ -112,21 +118,21 @@ export function MergePage() {
             />
 
             {pendingFiles.length >= 2 && (
-              <div className="mt-6 flex justify-center">
+              <div className="mt-8 flex justify-center">
                 <Button
                   onClick={handleMerge}
                   disabled={isMerging}
+                  variant="primary"
                   size="lg"
-                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8"
                 >
                   {isMerging ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       Merging...
                     </>
                   ) : (
                     <>
-                      <Combine className="mr-2 h-5 w-5" />
+                      <Combine className="h-5 w-5" />
                       Merge {pendingFiles.length} files
                     </>
                   )}
@@ -135,7 +141,7 @@ export function MergePage() {
             )}
 
             {pendingFiles.length === 1 && (
-              <p className="mt-4 text-center text-sm text-slate-500">
+              <p className="mt-6 text-center text-slate-500">
                 Add at least one more file to merge
               </p>
             )}
@@ -143,7 +149,7 @@ export function MergePage() {
         )}
 
         {isLoaded && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <FileInfo />
             <ToolBar />
             <DataTable />

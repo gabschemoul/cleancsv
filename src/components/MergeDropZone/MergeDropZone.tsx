@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { UploadCloud, FileSpreadsheet, X } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, X, Shield } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { formatBytes } from '@/lib/utils'
@@ -79,88 +79,97 @@ export function MergeDropZone({
     })
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div
         {...getRootProps()}
         className={cn(
-          'relative cursor-pointer rounded-2xl border bg-white p-12 text-center transition-all duration-200',
-          'hover:border-[#8B5CF6]/50 hover:ring-4 hover:ring-[#8B5CF6]/10',
-          isDragActive && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/5',
-          isDragAccept && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/10',
-          !isDragActive && 'border-slate-200 shadow-lg shadow-slate-100'
+          'relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 sm:rounded-3xl sm:p-12 md:p-16',
+          'bg-gradient-to-b from-slate-50/50 to-white',
+          'hover:border-violet-300 hover:bg-gradient-to-b hover:from-violet-50/50 hover:to-white',
+          'hover:shadow-lg hover:shadow-violet-100/50',
+          isDragActive && 'border-violet-500 bg-gradient-to-b from-violet-50 to-white shadow-xl shadow-violet-100/50',
+          isDragAccept && 'border-violet-500 bg-gradient-to-b from-violet-100/50 to-white shadow-xl shadow-violet-200/50',
+          !isDragActive && !isDragAccept && 'border-slate-200'
         )}
       >
         <input {...getInputProps()} aria-label="Upload CSV files to merge" />
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 sm:gap-6">
           {isDragActive ? (
             <>
-              <div className="rounded-full bg-gradient-to-br from-[#8B5CF6]/20 to-[#8B5CF6]/10 p-5 shadow-inner">
-                <FileSpreadsheet className="h-10 w-10 text-[#8B5CF6]" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-violet-200 to-violet-100 shadow-inner sm:h-20 sm:w-20 sm:rounded-2xl">
+                <FileSpreadsheet className="h-8 w-8 text-violet-600 sm:h-10 sm:w-10" />
               </div>
-              <p className="text-xl font-semibold tracking-tight text-[#8B5CF6]">
+              <p className="text-xl font-semibold tracking-tight text-violet-600 sm:text-2xl">
                 Drop your files here
               </p>
             </>
           ) : (
             <>
-              <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50 p-5 shadow-inner">
-                <UploadCloud className="h-10 w-10 text-slate-600" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-violet-50 shadow-inner sm:h-20 sm:w-20 sm:rounded-2xl">
+                <UploadCloud className="h-8 w-8 text-violet-600 sm:h-10 sm:w-10" />
               </div>
               <div>
-                <p className="text-xl font-semibold tracking-tight text-slate-900">
+                <p className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
                   Drag & drop multiple CSV files
                 </p>
-                <p className="mt-2 text-slate-500">
+                <p className="mt-2 text-base text-slate-500 sm:mt-3 sm:text-lg">
                   or{' '}
-                  <span className="text-[#8B5CF6] underline underline-offset-2">
-                    click to browse
-                  </span>{' '}
-                  (select multiple files)
+                  <button className="font-medium text-violet-600 underline underline-offset-4 hover:text-violet-700">
+                    browse files
+                  </button>{' '}
+                  (select multiple)
                 </p>
+                <p className="mt-2 text-sm text-slate-400">CSV files up to 10MB each</p>
               </div>
             </>
           )}
         </div>
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+        {/* Privacy badge */}
+        <div className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 sm:mt-10 sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3">
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-100 sm:h-8 sm:w-8 sm:rounded-xl">
+            <Shield className="h-3 w-3 text-emerald-600 sm:h-4 sm:w-4" />
+          </div>
+          <span className="text-xs font-medium text-emerald-700 sm:text-sm">
+            Your data never leaves your browser
           </span>
-          Your data never leaves your browser
         </div>
       </div>
 
       {pendingFiles.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-medium text-slate-900">
+        <div className="rounded-2xl bg-slate-50/80 p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-medium text-slate-900">
               Files to merge ({pendingFiles.length})
             </h3>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {pendingFiles.map((pf, index) => (
               <li
                 key={pf.id}
-                className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3"
+                className="flex items-center justify-between rounded-xl bg-white px-5 py-4 shadow-sm"
               >
-                <div className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-sm font-semibold text-violet-600">
                     {index + 1}
                   </span>
-                  <FileSpreadsheet className="h-4 w-4 text-slate-400" />
-                  <span className="font-medium text-slate-700">{pf.file.name}</span>
-                  <span className="text-sm text-slate-400">
-                    {formatBytes(pf.file.size)}
-                  </span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
+                    <FileSpreadsheet className="h-5 w-5 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">{pf.file.name}</p>
+                    <p className="text-sm text-slate-400">
+                      {formatBytes(pf.file.size)}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => onFileRemove(pf.id)}
-                  className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-red-500"
+                  className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
                   aria-label={`Remove ${pf.file.name}`}
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </button>
               </li>
             ))}

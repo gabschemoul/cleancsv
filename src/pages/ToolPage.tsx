@@ -18,20 +18,24 @@ export function ToolPage({ tool }: ToolPageProps) {
 
   return (
     <ToolPageLayout>
-      <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
+      <div
+        className={`rounded-3xl bg-white p-6 shadow-card transition-shadow duration-300 hover:shadow-card-hover sm:p-10 ${
+          !isLoaded ? 'mx-auto max-w-4xl' : ''
+        }`}
+      >
         {!isLoaded && (
-          <>
-            <h1 className="mb-2 text-2xl font-semibold text-zinc-900">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               {tool.name}
             </h1>
-            <p className="mb-6 text-zinc-600">{tool.description}</p>
-          </>
+            <p className="mt-3 text-base text-slate-600 sm:text-lg">{tool.description}</p>
+          </div>
         )}
 
         <DropZone />
 
         {isLoaded && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <FileInfo />
             <ToolBar />
             <DataTable />

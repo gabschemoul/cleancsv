@@ -212,14 +212,14 @@ export const ToolBar = memo(function ToolBar() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3">
+    <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-slate-50/80 p-4">
       {/* Column selector */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-zinc-500">Column:</span>
+      <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+        <span className="text-sm font-medium text-slate-500">Column</span>
         <Select
           value={selectedColumn}
           onChange={(e) => setSelectedColumn(e.target.value)}
-          className="w-40"
+          className="w-44 border-0 bg-transparent font-medium text-slate-700"
         >
           <option value="">Select column</option>
           {columns.map((col) => (
@@ -230,139 +230,142 @@ export const ToolBar = memo(function ToolBar() {
         </Select>
       </div>
 
-      <div className="h-6 w-px bg-zinc-200" />
+      <div className="h-8 w-px bg-slate-200" />
 
-      {/* Deduplicate */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDeduplicate}
-        disabled={!selectedColumn}
-      >
-        <Copy className="h-4 w-4" />
-        Deduplicate
-      </Button>
-
-      {/* Format dropdown */}
-      <div className="relative">
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        {/* Deduplicate */}
         <Button
-          variant="outline"
-          size="sm"
-          onClick={() => toggleDropdown('format')}
+          variant="secondary"
+          size="default"
+          onClick={handleDeduplicate}
           disabled={!selectedColumn}
-          aria-expanded={openDropdown === 'format'}
-          aria-haspopup="menu"
         >
-          <Type className="h-4 w-4" />
-          Format
-          <ChevronDown
-            className={cn(
-              'h-3 w-3 transition-transform',
-              openDropdown === 'format' && 'rotate-180'
-            )}
-          />
+          <Copy className="h-4 w-4" />
+          Deduplicate
         </Button>
 
-        {openDropdown === 'format' && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={closeDropdown}
+        {/* Format dropdown */}
+        <div className="relative">
+          <Button
+            variant="secondary"
+            size="default"
+            onClick={() => toggleDropdown('format')}
+            disabled={!selectedColumn}
+            aria-expanded={openDropdown === 'format'}
+            aria-haspopup="menu"
+          >
+            <Type className="h-4 w-4" />
+            Format
+            <ChevronDown
+              className={cn(
+                'h-3.5 w-3.5 transition-transform',
+                openDropdown === 'format' && 'rotate-180'
+              )}
             />
-            <div
-              ref={menuRef}
-              className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
-              role="menu"
-              aria-label="Format options"
-            >
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
-                onClick={() => handleFormat(toLowerCase)}
-                role="menuitem"
-              >
-                <ArrowDownAZ className="h-4 w-4" />
-                lowercase
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
-                onClick={() => handleFormat(toUpperCase)}
-                role="menuitem"
-              >
-                <ArrowUpAZ className="h-4 w-4" />
-                UPPERCASE
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
-                onClick={() => handleFormat(toTitleCase)}
-                role="menuitem"
-              >
-                <CaseSensitive className="h-4 w-4" />
-                Title Case
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
-                onClick={() => handleFormat(trimWhitespace)}
-                role="menuitem"
-              >
-                <RemoveFormatting className="h-4 w-4" />
-                Trim whitespace
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+          </Button>
 
-      {/* Email dropdown */}
-      <div className="relative">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => toggleDropdown('email')}
-          disabled={!selectedColumn}
-          aria-expanded={openDropdown === 'email'}
-          aria-haspopup="menu"
-        >
-          <Mail className="h-4 w-4" />
-          Email
-          <ChevronDown
-            className={cn(
-              'h-3 w-3 transition-transform',
-              openDropdown === 'email' && 'rotate-180'
-            )}
-          />
-        </Button>
+          {openDropdown === 'format' && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={closeDropdown}
+              />
+              <div
+                ref={menuRef}
+                className="absolute left-0 top-full z-50 mt-2 w-52 rounded-xl border border-slate-100 bg-white p-1.5 shadow-lg"
+                role="menu"
+                aria-label="Format options"
+              >
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:outline-none"
+                  onClick={() => handleFormat(toLowerCase)}
+                  role="menuitem"
+                >
+                  <ArrowDownAZ className="h-4 w-4 text-slate-500" />
+                  lowercase
+                </button>
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:outline-none"
+                  onClick={() => handleFormat(toUpperCase)}
+                  role="menuitem"
+                >
+                  <ArrowUpAZ className="h-4 w-4 text-slate-500" />
+                  UPPERCASE
+                </button>
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:outline-none"
+                  onClick={() => handleFormat(toTitleCase)}
+                  role="menuitem"
+                >
+                  <CaseSensitive className="h-4 w-4 text-slate-500" />
+                  Title Case
+                </button>
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:outline-none"
+                  onClick={() => handleFormat(trimWhitespace)}
+                  role="menuitem"
+                >
+                  <RemoveFormatting className="h-4 w-4 text-slate-500" />
+                  Trim whitespace
+                </button>
+              </div>
+            </>
+          )}
+        </div>
 
-        {openDropdown === 'email' && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={closeDropdown}
+        {/* Email dropdown */}
+        <div className="relative">
+          <Button
+            variant="secondary"
+            size="default"
+            onClick={() => toggleDropdown('email')}
+            disabled={!selectedColumn}
+            aria-expanded={openDropdown === 'email'}
+            aria-haspopup="menu"
+          >
+            <Mail className="h-4 w-4" />
+            Email
+            <ChevronDown
+              className={cn(
+                'h-3.5 w-3.5 transition-transform',
+                openDropdown === 'email' && 'rotate-180'
+              )}
             />
-            <div
-              ref={menuRef}
-              className="absolute left-0 top-full z-50 mt-1 w-52 rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
-              role="menu"
-              aria-label="Email options"
-            >
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 focus:bg-zinc-100 focus:outline-none"
-                onClick={handleValidateEmails}
-                role="menuitem"
+          </Button>
+
+          {openDropdown === 'email' && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={closeDropdown}
+              />
+              <div
+                ref={menuRef}
+                className="absolute left-0 top-full z-50 mt-2 w-56 rounded-xl border border-slate-100 bg-white p-1.5 shadow-lg"
+                role="menu"
+                aria-label="Email options"
               >
-                <Mail className="h-4 w-4" />
-                Validate emails
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 focus:bg-red-100 focus:outline-none"
-                onClick={handleRemoveInvalidEmails}
-                role="menuitem"
-              >
-                <Scissors className="h-4 w-4" />
-                Remove invalid emails
-              </button>
-            </div>
-          </>
-        )}
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:outline-none"
+                  onClick={handleValidateEmails}
+                  role="menuitem"
+                >
+                  <Mail className="h-4 w-4 text-slate-500" />
+                  Validate emails
+                </button>
+                <button
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:bg-red-100 focus:outline-none"
+                  onClick={handleRemoveInvalidEmails}
+                  role="menuitem"
+                >
+                  <Scissors className="h-4 w-4" />
+                  Remove invalid emails
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
