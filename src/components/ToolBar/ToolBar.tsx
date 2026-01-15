@@ -9,12 +9,14 @@ import {
   ArrowUpAZ,
   CaseSensitive,
   RemoveFormatting,
+  Combine,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useCsvContext } from '@/hooks/useCsvContext'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
+import { MergeModal } from '@/components/MergeModal'
 import { deduplicate } from '@/processing/deduplicate'
 import {
   toLowerCase,
@@ -29,6 +31,7 @@ export const ToolBar = memo(function ToolBar() {
   const [selectedColumn, setSelectedColumn] = useState<string>('')
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [focusedIndex, setFocusedIndex] = useState(-1)
+  const [isMergeModalOpen, setIsMergeModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const closeDropdown = useCallback(() => {
@@ -366,7 +369,25 @@ export const ToolBar = memo(function ToolBar() {
             </>
           )}
         </div>
+
+        <div className="h-8 w-px bg-slate-200" />
+
+        {/* Merge button */}
+        <Button
+          variant="secondary"
+          size="default"
+          onClick={() => setIsMergeModalOpen(true)}
+        >
+          <Combine className="h-4 w-4" />
+          Merge
+        </Button>
       </div>
+
+      {/* Merge Modal */}
+      <MergeModal
+        isOpen={isMergeModalOpen}
+        onClose={() => setIsMergeModalOpen(false)}
+      />
     </div>
   )
 })
