@@ -34,6 +34,8 @@ export function PrivacyBadge({ variant = 'compact' }: PrivacyBadgeProps) {
           'flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200',
           'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'
         )}
+        aria-label="Privacy information"
+        aria-expanded={showDetails}
       >
         <span className="relative flex h-4 w-4">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
@@ -66,6 +68,7 @@ export function PrivacyBadge({ variant = 'compact' }: PrivacyBadgeProps) {
               <button
                 onClick={() => setShowDetails(false)}
                 className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
+                aria-label="Close privacy details"
               >
                 <X className="h-4 w-4" />
               </button>

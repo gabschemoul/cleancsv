@@ -121,6 +121,7 @@ export function FileInfo() {
         accept=".csv,.txt"
         onChange={handleFileChange}
         className="hidden"
+        aria-label="Replace CSV file"
       />
 
       <div className="flex flex-wrap items-center gap-4">
@@ -131,6 +132,7 @@ export function FileInfo() {
             onClick={handleReplaceClick}
             className="rounded p-1 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600"
             title="Replace file"
+            aria-label="Replace file"
           >
             <Upload className="h-3.5 w-3.5" />
           </button>
@@ -167,6 +169,7 @@ export function FileInfo() {
           onClick={handleUndo}
           disabled={!canUndo}
           title="Undo (Ctrl+Z)"
+          aria-label="Undo"
         >
           <Undo2 className="h-4 w-4" />
         </Button>
@@ -176,6 +179,7 @@ export function FileInfo() {
           onClick={handleRedo}
           disabled={!canRedo}
           title="Redo (Ctrl+Shift+Z)"
+          aria-label="Redo"
         >
           <Redo2 className="h-4 w-4" />
         </Button>
@@ -217,6 +221,7 @@ export function FileInfo() {
           onClick={handleClear}
           className="text-zinc-400 hover:bg-red-50 hover:text-red-600"
           title="Clear all data"
+          aria-label="Clear all data"
         >
           <X className="h-4 w-4" />
         </Button>

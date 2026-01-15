@@ -125,7 +125,7 @@ export function DropZone() {
         !isDragActive && 'border-slate-200 shadow-lg shadow-slate-100'
       )}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} aria-label="Upload CSV file" />
 
       <div className="flex flex-col items-center gap-5">
         {isLoading ? (
