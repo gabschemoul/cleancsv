@@ -1,10 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Typography - DM Sans */
+  /* Typography */
   --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Vollkorn", Georgia, serif;
 
-  /* Colors - Zinc base + Emerald accent */
+  /* Primary - Violet */
+  --color-primary: #8B5CF6;
+  --color-primary-hover: #7C3AED;
+  --color-primary-light: #EDE9FE;
+  --color-primary-subtle: #F5F3FF;
+
+  /* Colors - Zinc base */
   --color-background: #fafafa;
   --color-foreground: #18181b;
   --color-muted: #71717a;

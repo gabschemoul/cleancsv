@@ -117,7 +117,7 @@ export function MergePage() {
                   onClick={handleMerge}
                   disabled={isMerging}
                   size="lg"
-                  className="bg-[#CE47FF] hover:bg-[#b83de6] text-white px-8"
+                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8"
                 >
                   {isMerging ? (
                     <>

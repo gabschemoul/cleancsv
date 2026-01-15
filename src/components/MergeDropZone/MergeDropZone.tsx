@@ -84,9 +84,9 @@ export function MergeDropZone({
         {...getRootProps()}
         className={cn(
           'relative cursor-pointer rounded-2xl border bg-white p-12 text-center transition-all duration-200',
-          'hover:border-[#CE47FF]/50 hover:ring-4 hover:ring-[#CE47FF]/10',
-          isDragActive && 'border-[#CE47FF] ring-4 ring-[#CE47FF]/20 bg-[#CE47FF]/5',
-          isDragAccept && 'border-[#CE47FF] ring-4 ring-[#CE47FF]/20 bg-[#CE47FF]/10',
+          'hover:border-[#8B5CF6]/50 hover:ring-4 hover:ring-[#8B5CF6]/10',
+          isDragActive && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/5',
+          isDragAccept && 'border-[#8B5CF6] ring-4 ring-[#8B5CF6]/20 bg-[#8B5CF6]/10',
           !isDragActive && 'border-slate-200 shadow-lg shadow-slate-100'
         )}
       >
@@ -95,10 +95,10 @@ export function MergeDropZone({
         <div className="flex flex-col items-center gap-4">
           {isDragActive ? (
             <>
-              <div className="rounded-full bg-gradient-to-br from-[#CE47FF]/20 to-[#CE47FF]/10 p-5 shadow-inner">
-                <FileSpreadsheet className="h-10 w-10 text-[#CE47FF]" />
+              <div className="rounded-full bg-gradient-to-br from-[#8B5CF6]/20 to-[#8B5CF6]/10 p-5 shadow-inner">
+                <FileSpreadsheet className="h-10 w-10 text-[#8B5CF6]" />
               </div>
-              <p className="text-xl font-semibold tracking-tight text-[#CE47FF]">
+              <p className="text-xl font-semibold tracking-tight text-[#8B5CF6]">
                 Drop your files here
               </p>
             </>
@@ -113,7 +113,7 @@ export function MergeDropZone({
                 </p>
                 <p className="mt-2 text-slate-500">
                   or{' '}
-                  <span className="text-[#CE47FF] underline underline-offset-2">
+                  <span className="text-[#8B5CF6] underline underline-offset-2">
                     click to browse
                   </span>{' '}
                   (select multiple files)
